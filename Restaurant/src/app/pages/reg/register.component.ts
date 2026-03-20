@@ -23,7 +23,7 @@ export class RegisterComponent {
       if (this.user.fullname && this.user.phone) {
 
         // ✅ แก้ตรงนี้ (จาก insertMember → signUp)
-        await this.supabaseService.signUp(this.user);
+        await this.supabaseService.insertMember(this.user);
 
         this.isSuccess = true;
         console.log('บันทึกลง Supabase เรียบร้อย!');
