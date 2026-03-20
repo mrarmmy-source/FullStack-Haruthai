@@ -5,50 +5,137 @@
     <p>Authentic Thai cuisine crafted with tradition</p>
   </div>
 
-    <div *ngIf="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading menu...</p>
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading menu...</p>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="category-bar">
+      <button *ngFor="let cat of categories" class="cat-btn"
+        [class.cat-btn--active]="selectedCategory === cat"
+        (click)="selectedCategory = cat">
+        {{ cat }}
+      </button>
     </div>
 
-    <ng-container *ngIf="!loading">
-      <div class="category-bar">
-        <button
-          *ngFor="let cat of categories"
-          class="cat-btn"
-          [class.cat-btn--active]="selectedCategory === cat"
-          (click)="selectedCategory = cat">
-          {{ cat }}
-        </button>
-      </div>
-
-      <div class="menu-grid">
-        <div *ngFor="let item of filteredMenus" class="menu-card">
-          <div class="menu-card__image">
-            <img *ngIf="item.image_url" [src]="item.image_url" [alt]="item.name">
-            <div *ngIf="!item.image_url" class="menu-card__placeholder">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40" opacity="0.3">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.4 5h12.8M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z"/>
-              </svg>
-            </div>
+    <div class="menu-grid">
+      <div *ngFor="let item of filteredMenus" class="menu-card">
+        <div class="menu-card__image">
+          <img *ngIf="item.image_url" [src]="item.image_url" [alt]="item.name">
+          <div *ngIf="!item.image_url" class="menu-card__placeholder">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40" opacity="0.3">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.4 5h12.8M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z"/>
+            </svg>
           </div>
-          <div class="menu-card__body">
-            <div class="menu-card__row">
-              <h3 class="menu-card__name">{{ item.name }}</h3>
-              <span class="menu-card__price">฿{{ item.price }}</span>
-            </div>
-            <p *ngIf="item.description" class="menu-card__desc">{{ item.description }}</p>
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__row">
+            <h3 class="menu-card__name">{{ item.name }}</h3>
+            <span class="menu-card__price">฿{{ item.price }}</span>
+          </div>
+          <p *ngIf="item.description" class="menu-card__desc">{{ item.description }}</p>
+          <div class="menu-card__footer">
             <span class="menu-card__badge">{{ item.category }}</span>
+            <div *ngIf="getQtyInCart(item.id) > 0; else addBtn" class="qty-controls">
+              <button class="qty-btn" (click)="changeQty(item.id, -1)">−</button>
+              <span class="qty-value">{{ getQtyInCart(item.id) }}</span>
+              <button class="qty-btn" (click)="addToCart(item)">+</button>
+            </div>
+            <ng-template #addBtn>
+              <button class="btn-add" (click)="addToCart(item)">+ Add</button>
+            </ng-template>
           </div>
         </div>
       </div>
+    </div>
 
-      <div *ngIf="filteredMenus.length === 0" class="empty-state">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="48" height="48">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-        </svg>
-        <p>No items in this category</p>
+    <div *ngIf="filteredMenus.length === 0" class="empty-state">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="48" height="48">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+      </svg>
+      <p>No items in this category</p>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Floating Cart Button -->
+<button class="cart-fab" *ngIf="cartCount > 0 && !cartOpen" (click)="cartOpen = true">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.4 5h12.8M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z"/>
+  </svg>
+  <span class="cart-fab__badge">{{ cartCount }}</span>
+  <span>฿{{ cartTotal.toLocaleString() }}</span>
+</button>
+
+<!-- Overlay -->
+<div class="cart-overlay" *ngIf="cartOpen" (click)="cartOpen = false"></div>
+
+<!-- Cart Drawer -->
+<div class="cart-drawer" [class.cart-drawer--open]="cartOpen">
+  <div class="cart-drawer__header">
+    <h2 class="cart-title">Your Order</h2>
+    <button class="cart-close" (click)="cartOpen = false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Success -->
+  <div *ngIf="orderSuccess" class="order-success">
+    <div class="success-icon">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="36" height="36">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <h3 class="success-title">Order Placed!</h3>
+    <p class="success-msg">Your order has been sent to the kitchen. We'll prepare it shortly.</p>
+    <button class="btn-primary" (click)="closeSuccess()">View My Orders</button>
+  </div>
+
+  <!-- Cart Items -->
+  <ng-container *ngIf="!orderSuccess">
+    <div class="cart-items">
+      <div *ngIf="cart.length === 0" class="cart-empty">
+        <p>No items added yet</p>
       </div>
-    </ng-container>
+      <div *ngFor="let item of cart" class="cart-item">
+        <div class="cart-item__info">
+          <p class="cart-item__name">{{ item.name }}</p>
+          <p class="cart-item__price">฿{{ item.price }}</p>
+        </div>
+        <div class="qty-controls">
+          <button class="qty-btn" (click)="changeQty(item.id, -1)">−</button>
+          <span class="qty-value">{{ item.qty }}</span>
+          <button class="qty-btn" (click)="changeQty(item.id, 1)">+</button>
+        </div>
+        <span class="cart-item__subtotal">฿{{ (item.price * item.qty).toLocaleString() }}</span>
+      </div>
+    </div>
+
+    <div class="cart-divider"></div>
+
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span class="cart-total-amount">฿{{ cartTotal.toLocaleString() }}</span>
+    </div>
+
+    <div class="cart-form-group">
+      <label class="cart-label">Table Number</label>
+      <input class="cart-input" type="text" [(ngModel)]="tableNumber" placeholder="e.g. 5">
+    </div>
+
+    <button class="btn-primary btn-place-order"
+      (click)="placeOrder()"
+      [disabled]="placingOrder || !tableNumber.trim() || cart.length === 0">
+      <span *ngIf="!placingOrder">Place Order — ฿{{ cartTotal.toLocaleString() }}</span>
+      <span *ngIf="placingOrder" class="btn-loading">
+        <span class="btn-spinner"></span>Placing...
+      </span>
+    </button>
+  </ng-container>
 </div>

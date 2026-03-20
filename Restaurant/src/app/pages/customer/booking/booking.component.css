@@ -157,6 +157,46 @@ input[type="date"].input-field::-webkit-calendar-picker-indicator {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── Form Row (date + time side by side) ── */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }
+
+/* ── Price Box ── */
+.price-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--muted);
+  padding: 0.25rem 0;
+}
+.price-row--total {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fg);
+  padding-top: 0.5rem;
+}
+.price-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 0;
+}
+.price-total {
+  color: var(--accent);
+  font-size: 1.15rem;
+}
+
 /* ── Success State ── */
 .success-state {
   display: flex;

@@ -24,7 +24,7 @@
                 </svg>
                 Table {{ o.table_number }}
               </div>
-              <p class="order-time">{{ o.order_time }}</p>
+              <p class="order-time">{{ o.order_time | date:'dd MMM yyyy, HH:mm' }}</p>
             </div>
             <span class="status-badge"
               [class.status-pending]="o.status === 'pending'"
@@ -41,7 +41,7 @@
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="12" height="12">
                 <circle cx="12" cy="12" r="4" stroke-width="2" fill="currentColor"/>
               </svg>
-              {{ item }}
+              {{ item.name }} × {{ item.qty }}
             </p>
           </div>
 

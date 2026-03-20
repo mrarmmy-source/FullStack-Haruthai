@@ -1,18 +1,236 @@
 <app-customer-sidebar></app-customer-sidebar>
 <div class="page-content">
-  <div class="content-header">
-    <h1>My Payments</h1>
-    <p>Your complete transaction history</p>
-  </div>
 
-    <!-- Loading -->
+  <!-- ══════════════════════════════════════
+       CHECKOUT MODE (coming from booking)
+  ══════════════════════════════════════ -->
+  <ng-container *ngIf="isCheckout">
+
+    <!-- Success -->
+    <ng-container *ngIf="isSuccess">
+      <div class="content-header">
+        <h1>Payment Complete</h1>
+        <p>Thank you for your booking</p>
+      </div>
+      <div class="success-card">
+        <div class="success-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <h2 class="success-title">Booking Confirmed!</h2>
+        <p class="success-msg">
+          Your booking of <strong class="accent">฿{{ checkoutData?.amount?.toLocaleString() }}</strong>
+          is awaiting staff confirmation. You will be notified once your payment is approved.
+        </p>
+        <div class="success-actions">
+          <button class="btn-primary" (click)="viewHistory()">View Payment History</button>
+          <button class="btn-outline" (click)="router.navigate(['/customer/home'])">Back to Home</button>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Checkout form -->
+    <ng-container *ngIf="!isSuccess">
+      <div class="content-header">
+        <h1>Complete Payment</h1>
+        <p>Choose how you'd like to pay</p>
+      </div>
+
+      <div class="checkout-layout">
+
+        <!-- Left: payment method -->
+        <div class="payment-card">
+          <p class="section-title">Payment Method</p>
+
+          <!-- Method tabs -->
+          <div class="method-tabs">
+            <button class="method-tab" [class.method-tab--active]="selectedMethod === 'cash'"
+              (click)="selectedMethod = 'cash'">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              Cash
+            </button>
+            <button class="method-tab" [class.method-tab--active]="selectedMethod === 'card'"
+              (click)="selectedMethod = 'card'">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+              </svg>
+              Credit / Debit Card
+            </button>
+            <button class="method-tab" [class.method-tab--active]="selectedMethod === 'qr'"
+              (click)="selectedMethod = 'qr'">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+              </svg>
+              QR Code
+            </button>
+          </div>
+
+          <!-- CASH -->
+          <div *ngIf="selectedMethod === 'cash'" class="method-panel">
+            <div class="cash-info">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="32" height="32" style="color:var(--accent)">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <p>Please pay <strong class="accent">฿{{ checkoutData?.amount?.toLocaleString() }}</strong> at the reception desk when you arrive.</p>
+              <p class="cash-note">Your reservation is held. Bring this confirmation number.</p>
+            </div>
+          </div>
+
+          <!-- CARD -->
+          <div *ngIf="selectedMethod === 'card'" class="method-panel">
+            <!-- Visual card -->
+            <div class="card-visual">
+              <div class="card-visual__chip"></div>
+              <div class="card-visual__number">
+                {{ card.number || '•••• •••• •••• ••••' }}
+              </div>
+              <div class="card-visual__bottom">
+                <div>
+                  <p class="card-visual__label">Cardholder</p>
+                  <p class="card-visual__value">{{ card.holder || 'YOUR NAME' }}</p>
+                </div>
+                <div>
+                  <p class="card-visual__label">Expires</p>
+                  <p class="card-visual__value">{{ card.expiry || 'MM/YY' }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cardholder Name</label>
+              <input class="input-field" type="text" [(ngModel)]="card.holder"
+                placeholder="Name on card" autocomplete="cc-name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Card Number</label>
+              <input class="input-field input-mono" type="text"
+                [value]="card.number"
+                (input)="onCardNumberInput($event)"
+                placeholder="0000 0000 0000 0000"
+                maxlength="19" autocomplete="cc-number">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Expiry</label>
+                <input class="input-field input-mono" type="text"
+                  [value]="card.expiry"
+                  (input)="onExpiryInput($event)"
+                  placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVV</label>
+                <input class="input-field input-mono" type="password"
+                  [(ngModel)]="card.cvv"
+                  placeholder="•••" maxlength="4" autocomplete="cc-csc">
+              </div>
+            </div>
+          </div>
+
+          <!-- QR -->
+          <div *ngIf="selectedMethod === 'qr'" class="method-panel">
+            <div class="qr-panel">
+              <div class="qr-box">
+                <!-- QR code placeholder grid -->
+                <svg viewBox="0 0 100 100" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="100" height="100" fill="#1c1c1c"/>
+                  <rect x="5" y="5" width="35" height="35" rx="3" fill="none" stroke="#d4a853" stroke-width="3"/>
+                  <rect x="13" y="13" width="19" height="19" rx="1" fill="#d4a853"/>
+                  <rect x="60" y="5" width="35" height="35" rx="3" fill="none" stroke="#d4a853" stroke-width="3"/>
+                  <rect x="68" y="13" width="19" height="19" rx="1" fill="#d4a853"/>
+                  <rect x="5" y="60" width="35" height="35" rx="3" fill="none" stroke="#d4a853" stroke-width="3"/>
+                  <rect x="13" y="68" width="19" height="19" rx="1" fill="#d4a853"/>
+                  <rect x="48" y="48" width="5" height="5" fill="#d4a853"/>
+                  <rect x="57" y="48" width="5" height="5" fill="#d4a853"/>
+                  <rect x="66" y="48" width="5" height="5" fill="#d4a853"/>
+                  <rect x="75" y="48" width="5" height="5" fill="#d4a853"/>
+                  <rect x="48" y="57" width="5" height="5" fill="#d4a853"/>
+                  <rect x="66" y="57" width="5" height="5" fill="#d4a853"/>
+                  <rect x="75" y="57" width="5" height="5" fill="#d4a853"/>
+                  <rect x="48" y="66" width="5" height="5" fill="#d4a853"/>
+                  <rect x="57" y="66" width="5" height="5" fill="#d4a853"/>
+                  <rect x="75" y="66" width="5" height="5" fill="#d4a853"/>
+                  <rect x="48" y="75" width="5" height="5" fill="#d4a853"/>
+                  <rect x="57" y="75" width="5" height="5" fill="#d4a853"/>
+                  <rect x="66" y="75" width="5" height="5" fill="#d4a853"/>
+                  <rect x="84" y="75" width="5" height="5" fill="#d4a853"/>
+                  <rect x="84" y="48" width="5" height="5" fill="#d4a853"/>
+                  <rect x="84" y="57" width="5" height="5" fill="#d4a853"/>
+                  <rect x="84" y="66" width="5" height="5" fill="#d4a853"/>
+                </svg>
+              </div>
+              <p class="qr-label">Scan with your banking app</p>
+              <p class="qr-amount">฿{{ checkoutData?.amount?.toLocaleString() }}</p>
+              <p class="qr-note">Screenshot or scan within 5 minutes</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: order summary -->
+        <div class="summary-card">
+          <p class="section-title">Booking Summary</p>
+          <div class="summary-rows">
+            <div class="summary-row">
+              <span>Date</span>
+              <span>{{ checkoutData?.date }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Time</span>
+              <span>{{ checkoutData?.time }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Guests</span>
+              <span>{{ checkoutData?.guests }} person{{ (checkoutData?.guests ?? 1) > 1 ? 's' : '' }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Per Person</span>
+              <span>฿299</span>
+            </div>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-total">
+            <span>Total</span>
+            <span class="summary-total-amount">฿{{ checkoutData?.amount?.toLocaleString() }}</span>
+          </div>
+
+          <button class="btn-primary btn-pay" (click)="pay()" [disabled]="submitting || !canSubmit">
+            <span *ngIf="!submitting">
+              {{ selectedMethod === 'cash' ? 'Confirm Booking' : 'Pay ฿' + checkoutData?.amount?.toLocaleString() }}
+            </span>
+            <span *ngIf="submitting" class="btn-loading">
+              <span class="btn-spinner"></span>Processing...
+            </span>
+          </button>
+
+          <p *ngIf="selectedMethod === 'card' && !canSubmit" class="card-hint">
+            Please fill in all card details to continue
+          </p>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <!-- ══════════════════════════════════════
+       HISTORY MODE
+  ══════════════════════════════════════ -->
+  <ng-container *ngIf="!isCheckout">
+    <div class="content-header">
+      <h1>My Payments</h1>
+      <p>Your complete transaction history</p>
+    </div>
+
     <div *ngIf="loading" class="loading-state">
       <div class="spinner"></div>
       <p>Loading payments...</p>
     </div>
 
     <ng-container *ngIf="!loading">
-      <!-- Table -->
       <div class="table-wrap" *ngIf="payments.length > 0">
         <table class="data-table">
           <thead>
@@ -28,13 +246,15 @@
             <tr *ngFor="let p of payments">
               <td class="cell-mono">{{ p.id?.substring(0, 8) }}...</td>
               <td class="cell-amount">฿{{ p.amount?.toLocaleString() }}</td>
-              <td>{{ p.method || '—' }}</td>
-              <td class="cell-muted">{{ p.created_at | date:'dd MMM yyyy' }}</td>
+              <td class="cell-method">
+                <span class="method-pill method-pill--{{ p.method }}">{{ p.method }}</span>
+              </td>
+              <td class="cell-muted">{{ p.created_at | date:'dd MMM yyyy, HH:mm' }}</td>
               <td>
                 <span class="status-badge"
                   [class.status-completed]="p.status === 'completed'"
-                  [class.status-pending]="p.status === 'pending'"
-                  [class.status-cancelled]="p.status === 'cancelled'">
+                  [class.status-confirmed]="p.status === 'confirmed'"
+                  [class.status-pending]="p.status === 'pending'">
                   {{ p.status }}
                 </span>
               </td>
@@ -43,14 +263,14 @@
         </table>
       </div>
 
-      <!-- Empty State -->
       <div *ngIf="payments.length === 0" class="empty-state">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="56" height="56">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
             d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
         </svg>
-        <p class="empty-title">No payments found</p>
-        <p class="empty-sub">Your payment history will appear here after completing a transaction</p>
+        <p class="empty-title">No payments yet</p>
+        <p class="empty-sub">Your transaction history will appear here</p>
       </div>
     </ng-container>
+  </ng-container>
 </div>

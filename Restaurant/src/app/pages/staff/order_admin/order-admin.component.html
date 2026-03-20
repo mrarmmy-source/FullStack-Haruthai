@@ -39,7 +39,7 @@
           <div class="order-card__header">
             <div>
               <p class="order-customer">{{ o.customer_name || 'Unknown' }}</p>
-              <p class="order-time">{{ o.order_time }}</p>
+              <p class="order-time">{{ o.order_time | date:'dd MMM yyyy, HH:mm' }}</p>
             </div>
             <span class="status-badge"
               [class.status-pending]="o.status === 'pending'"
@@ -65,13 +65,27 @@
           <div class="order-items" *ngIf="o.items && o.items.length > 0">
             <p *ngFor="let item of o.items" class="order-item">
               <span class="order-item-dot"></span>
-              {{ item }}
+              {{ item.name }} × {{ item.qty }}
             </p>
           </div>
 
           <div class="order-card__footer">
-            <span class="order-total-label">Total</span>
             <span class="order-total">฿{{ o.total?.toLocaleString() }}</span>
+            <div class="order-actions">
+              <button *ngIf="o.status === 'pending'"
+                class="btn-action btn-action--prepare"
+                [disabled]="updating.has(o.id)"
+                (click)="updateStatus(o, 'preparing')">
+                {{ updating.has(o.id) ? '...' : 'Preparing' }}
+              </button>
+              <button *ngIf="o.status === 'preparing'"
+                class="btn-action btn-action--complete"
+                [disabled]="updating.has(o.id)"
+                (click)="updateStatus(o, 'completed')">
+                {{ updating.has(o.id) ? '...' : 'Complete' }}
+              </button>
+              <span *ngIf="o.status === 'completed'" class="done-label">Done</span>
+            </div>
           </div>
         </div>
       </div>

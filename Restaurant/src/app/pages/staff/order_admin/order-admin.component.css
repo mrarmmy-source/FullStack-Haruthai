@@ -230,6 +230,37 @@ select.input-field option { background: var(--card); color: var(--fg); }
 .status-cancelled { background: rgba(248, 113, 113, 0.15); color: #f87171; }
 .status-preparing { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
 
+/* ── Order Actions ── */
+.order-card__footer {
+  gap: 0.5rem;
+}
+.order-actions { display: flex; gap: 0.4rem; }
+.btn-action {
+  padding: 0.3rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+.btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-action--prepare {
+  background: rgba(96,165,250,0.12);
+  border-color: rgba(96,165,250,0.3);
+  color: #60a5fa;
+}
+.btn-action--prepare:hover:not(:disabled) { background: rgba(96,165,250,0.22); }
+.btn-action--complete {
+  background: rgba(74,222,128,0.12);
+  border-color: rgba(74,222,128,0.3);
+  color: #4ade80;
+}
+.btn-action--complete:hover:not(:disabled) { background: rgba(74,222,128,0.22); }
+.done-label { font-size: 0.78rem; color: var(--muted); }
+
 /* ── Empty State ── */
 .empty-state {
   display: flex;

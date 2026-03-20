@@ -78,6 +78,7 @@
               <th>Method</th>
               <th>Date</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -94,6 +95,15 @@
                   [class.status-cancelled]="p.status === 'cancelled'">
                   {{ p.status }}
                 </span>
+              </td>
+              <td>
+                <button *ngIf="p.status === 'pending'"
+                  class="btn-confirm"
+                  [disabled]="confirming.has(p.id)"
+                  (click)="confirmPayment(p)">
+                  {{ confirming.has(p.id) ? 'Confirming...' : 'Confirm' }}
+                </button>
+                <span *ngIf="p.status !== 'pending'" class="cell-muted">—</span>
               </td>
             </tr>
           </tbody>

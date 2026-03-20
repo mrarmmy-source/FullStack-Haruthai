@@ -137,6 +137,15 @@ export class SupabaseService {
     return data ?? [];
   }
 
+  async createOrder(orderData: { customer_name: string; table_number: string; items: any[]; total: number }) {
+    const { error } = await this.supabase.from('orders').insert([{
+      profile_id: this.currentUser?.id ?? null,
+      status: 'pending',
+      ...orderData
+    }]);
+    if (error) throw error;
+  }
+
   async updateOrderStatus(id: string, status: string) {
     const { error } = await this.supabase.from('orders').update({ status }).eq('id', id);
     if (error) throw error;
@@ -161,5 +170,24 @@ export class SupabaseService {
       .order('created_at', { ascending: false });
     if (error) throw error;
     return data ?? [];
+  }
+
+  async createPayment(paymentData: { customer_name: string; amount: number; method: string; status: string }) {
+    const { error } = await this.supabase.from('payments').insert([paymentData]);
+    if (error) throw error;
+  }
+
+  async updatePaymentStatus(id: string, status: string) {
+    const { error } = await this.supabase.from('payments').update({ status }).eq('id', id);
+    if (error) throw error;
+  }
+
+  async updatePaymentStatusByCustomer(customerName: string, fromStatus: string, toStatus: string) {
+    const { error } = await this.supabase
+      .from('payments')
+      .update({ status: toStatus })
+      .eq('customer_name', customerName)
+      .eq('status', fromStatus);
+    if (error) throw error;
   }
 }

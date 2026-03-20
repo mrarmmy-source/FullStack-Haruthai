@@ -2,80 +2,64 @@
 <div class="page-content">
   <div class="content-header">
     <h1>Reserve a Table</h1>
-    <p>Book your dining experience with us</p>
+    <p>Book your dining experience — ฿{{ pricePerPerson }} per person</p>
   </div>
 
-    <!-- Success State -->
-    <div *ngIf="isSuccess" class="success-state">
-      <div class="success-icon">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="36" height="36">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
-      </div>
-      <h2 class="success-title">Booking Confirmed!</h2>
-      <p class="success-msg">We will reach out to confirm your reservation. See you soon at Ha-ru-thai.</p>
-      <button class="btn-primary success-back-btn" (click)="router.navigate(['/customer/home'])">
-        Back to Home
-      </button>
-    </div>
+  <div class="form-card">
+    <p class="form-section-title">Reservation Details</p>
 
-    <!-- Booking Form -->
-    <div *ngIf="!isSuccess" class="form-card">
-      <p class="form-section-title">Reservation Details</p>
-
-      <form (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-row">
         <div class="form-group">
           <label class="form-label">Date</label>
-          <input
-            type="date"
-            class="input-field"
-            [(ngModel)]="booking.booking_date"
-            name="date"
-            [min]="today"
-            required>
+          <input type="date" class="input-field"
+            [(ngModel)]="booking.booking_date" name="date"
+            [min]="today" required>
         </div>
-
         <div class="form-group">
           <label class="form-label">Time</label>
-          <select
-            class="input-field"
-            [(ngModel)]="booking.booking_time"
-            name="time"
-            required>
+          <select class="input-field"
+            [(ngModel)]="booking.booking_time" name="time" required>
             <option value="">Select a time slot</option>
             <option *ngFor="let t of timeSlots" [value]="t">{{ t }}</option>
           </select>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label class="form-label">Number of Guests</label>
-          <input
-            type="number"
-            class="input-field"
-            [(ngModel)]="booking.guests_count"
-            name="guests"
-            min="1"
-            max="20"
-            required>
+      <div class="form-group">
+        <label class="form-label">Number of Guests</label>
+        <input type="number" class="input-field"
+          [(ngModel)]="booking.guests_count" name="guests"
+          min="1" max="20" required>
+      </div>
+
+      <!-- Price breakdown -->
+      <div class="price-box">
+        <div class="price-row">
+          <span>{{ booking.guests_count || 1 }} guest{{ (booking.guests_count || 1) > 1 ? 's' : '' }} × ฿{{ pricePerPerson }}</span>
+          <span>฿{{ totalAmount.toLocaleString() }}</span>
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Special Request <span class="form-label-optional">(optional)</span></label>
-          <textarea
-            class="input-field"
-            [(ngModel)]="booking.special_request"
-            name="note"
-            rows="3"
-            placeholder="e.g. window seat, dietary restrictions, celebration..."></textarea>
+        <div class="price-divider"></div>
+        <div class="price-row price-row--total">
+          <span>Total</span>
+          <span class="price-total">฿{{ totalAmount.toLocaleString() }}</span>
         </div>
+      </div>
 
-        <button type="submit" class="btn-primary btn-full" [disabled]="loading">
-          <span *ngIf="!loading">Confirm Reservation</span>
-          <span *ngIf="loading" class="btn-loading">
-            <span class="btn-spinner"></span>
-            Processing...
-          </span>
-        </button>
-      </form>
-    </div>
+      <div class="form-group">
+        <label class="form-label">Special Request <span class="form-label-optional">(optional)</span></label>
+        <textarea class="input-field"
+          [(ngModel)]="booking.special_request" name="note" rows="3"
+          placeholder="e.g. window seat, dietary restrictions, celebration..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary btn-full" [disabled]="loading">
+        <span *ngIf="!loading">Continue to Payment — ฿{{ totalAmount.toLocaleString() }}</span>
+        <span *ngIf="loading" class="btn-loading">
+          <span class="btn-spinner"></span>
+          Processing...
+        </span>
+      </button>
+    </form>
+  </div>
 </div>

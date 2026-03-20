@@ -69,13 +69,13 @@
               {{ b.status }}
             </span>
             <div class="action-btns" *ngIf="b.status === 'pending'">
-              <button class="btn-confirm" (click)="updateStatus(b.id, 'confirmed')">
+              <button class="btn-confirm" (click)="updateStatus(b, 'confirmed')">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="13" height="13">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
                 Confirm
               </button>
-              <button class="btn-reject" (click)="updateStatus(b.id, 'cancelled')">
+              <button class="btn-reject" (click)="updateStatus(b, 'cancelled')">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="13" height="13">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>

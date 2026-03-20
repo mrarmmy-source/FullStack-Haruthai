@@ -29,8 +29,15 @@ export class BookingAdminComponent implements OnInit {
     finally { this.loading = false; }
   }
 
-  async updateStatus(id: string, status: string) {
-    try { await this.supabaseService.updateBookingStatus(id, status); await this.load(); }
-    catch (err: any) { alert('Error: ' + err?.message); }
+  async updateStatus(booking: any, status: string) {
+    try {
+      await this.supabaseService.updateBookingStatus(booking.id, status);
+      if (status === 'confirmed' && booking.profiles?.full_name) {
+        await this.supabaseService.updatePaymentStatusByCustomer(
+          booking.profiles.full_name, 'pending', 'completed'
+        );
+      }
+      await this.load();
+    } catch (err: any) { alert('Error: ' + err?.message); }
   }
 }

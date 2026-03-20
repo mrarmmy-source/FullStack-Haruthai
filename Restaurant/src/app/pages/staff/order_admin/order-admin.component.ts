@@ -37,4 +37,20 @@ export class OrderAdminComponent implements OnInit {
     const s = this.search.toLowerCase();
     this.filtered = this.orders.filter(o => o.customer_name?.toLowerCase().includes(s));
   }
+
+  updating: Set<string> = new Set();
+
+  async updateStatus(order: any, status: string) {
+    this.updating.add(order.id);
+    try {
+      await this.supabaseService.updateOrderStatus(order.id, status);
+      const idx = this.orders.findIndex(o => o.id === order.id);
+      if (idx !== -1) this.orders[idx] = { ...this.orders[idx], status };
+      this.filterOrders();
+    } catch (err: any) {
+      alert('Error: ' + (err?.message || err));
+    } finally {
+      this.updating.delete(order.id);
+    }
+  }
 }
