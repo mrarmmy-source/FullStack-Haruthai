@@ -28,7 +28,7 @@
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
 /* ===== SIDEBAR ===== */
-.sidebar {
+.sidebar {  
   position: fixed;
   left: 0; top: 0;
   width: var(--sidebar-w);

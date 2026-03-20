@@ -22,4 +22,11 @@ app.use(errorMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n❌ Port ${PORT} is already in use.\nRun: npx kill-port ${PORT}\n`);
+    process.exit(1);
+  } else {
+    throw err;
+  }
 });

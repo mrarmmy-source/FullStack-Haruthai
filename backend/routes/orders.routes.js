@@ -1,13 +1,12 @@
 const { Router } = require('express');
-const { getAllOrders, getOrderById, createOrder, updateOrderStatus, deleteOrder } = require('../controllers/orders.controller');
+const { getMyOrders, getAllOrders, createOrder, updateOrderStatus } = require('../controllers/orders.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 
 const router = Router();
 
+router.get('/my', authMiddleware, getMyOrders);
 router.get('/', authMiddleware, getAllOrders);
-router.get('/:id', getOrderById);
-router.post('/', createOrder);
+router.post('/', authMiddleware, createOrder);
 router.patch('/:id/status', authMiddleware, updateOrderStatus);
-router.delete('/:id', authMiddleware, deleteOrder);
 
 module.exports = router;

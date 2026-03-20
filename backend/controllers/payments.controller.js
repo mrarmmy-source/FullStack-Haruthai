@@ -1,65 +1,60 @@
-const { supabase, supabaseAdmin } = require('../config/supabase');
+const { supabaseAdmin } = require('../config/supabase');
+
+async function getMyPayments(req, res, next) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('payments')
+      .select('*')
+      .eq('customer_name', req.user.full_name)
+      .order('created_at', { ascending: false });
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data ?? []);
+  } catch (err) { next(err); }
+}
 
 async function getAllPayments(req, res, next) {
   try {
     const { data, error } = await supabaseAdmin
       .from('payments')
-      .select('*, orders(table_number, status)')
+      .select('*')
       .order('created_at', { ascending: false });
     if (error) return res.status(400).json({ error: error.message });
-    res.json(data);
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function getPaymentByOrderId(req, res, next) {
-  try {
-    const { order_id } = req.params;
-    const { data, error } = await supabase
-      .from('payments')
-      .select('*')
-      .eq('order_id', order_id)
-      .single();
-    if (error) return res.status(404).json({ error: 'Payment not found' });
-    res.json(data);
-  } catch (err) {
-    next(err);
-  }
+    res.json(data ?? []);
+  } catch (err) { next(err); }
 }
 
 async function createPayment(req, res, next) {
   try {
-    const { order_id, amount, method } = req.body;
-    // method: 'cash' | 'qr' | 'card'
-
-    const { data, error } = await supabase
+    const { customer_name, amount, method, status } = req.body;
+    const { error } = await supabaseAdmin
       .from('payments')
-      .insert([{ order_id, amount, method, status: 'pending' }])
-      .select()
-      .single();
-
+      .insert([{ customer_name, amount, method, status }]);
     if (error) return res.status(400).json({ error: error.message });
-    res.status(201).json(data);
-  } catch (err) {
-    next(err);
-  }
+    res.status(201).json({ message: 'Payment created' });
+  } catch (err) { next(err); }
 }
 
-async function confirmPayment(req, res, next) {
+async function updatePaymentStatus(req, res, next) {
   try {
     const { id } = req.params;
-    const { data, error } = await supabaseAdmin
-      .from('payments')
-      .update({ status: 'paid', paid_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single();
+    const { status } = req.body;
+    const { error } = await supabaseAdmin.from('payments').update({ status }).eq('id', id);
     if (error) return res.status(400).json({ error: error.message });
-    res.json(data);
-  } catch (err) {
-    next(err);
-  }
+    res.json({ message: 'Status updated' });
+  } catch (err) { next(err); }
 }
 
-module.exports = { getAllPayments, getPaymentByOrderId, createPayment, confirmPayment };
+async function updatePaymentStatusByCustomer(req, res, next) {
+  try {
+    const { customer_name, from_status, to_status } = req.body;
+    const { error } = await supabaseAdmin
+      .from('payments')
+      .update({ status: to_status })
+      .eq('customer_name', customer_name)
+      .eq('status', from_status);
+    if (error) return res.status(400).json({ error: error.message });
+    res.json({ message: 'Status updated' });
+  } catch (err) { next(err); }
+}
+
+module.exports = { getMyPayments, getAllPayments, createPayment, updatePaymentStatus, updatePaymentStatusByCustomer };

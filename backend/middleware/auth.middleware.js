@@ -1,22 +1,19 @@
-const { supabase } = require('../config/supabase');
+const jwt = require('jsonwebtoken');
 
-async function authMiddleware(req, res, next) {
+const JWT_SECRET = process.env.JWT_SECRET || 'haruthai-secret-key';
+
+function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
-
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Missing or invalid Authorization header' });
   }
-
   const token = authHeader.split(' ')[1];
-
-  const { data, error } = await supabase.auth.getUser(token);
-
-  if (error || !data.user) {
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
-
-  req.user = data.user;
-  next();
 }
 
 module.exports = authMiddleware;

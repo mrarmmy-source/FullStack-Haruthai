@@ -1,87 +1,52 @@
-const { supabase, supabaseAdmin } = require('../config/supabase');
+const { supabaseAdmin } = require('../config/supabase');
 
-async function getAllOrders(req, res, next) {
+async function getMyOrders(req, res, next) {
   try {
     const { data, error } = await supabaseAdmin
       .from('orders')
-      .select('*, order_items(*, menus(name, price))')
+      .select('*')
+      .eq('profile_id', req.user.id)
       .order('created_at', { ascending: false });
     if (error) return res.status(400).json({ error: error.message });
-    res.json(data);
-  } catch (err) {
-    next(err);
-  }
+    res.json(data ?? []);
+  } catch (err) { next(err); }
 }
 
-async function getOrderById(req, res, next) {
+async function getAllOrders(req, res, next) {
   try {
-    const { id } = req.params;
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*, order_items(*, menus(name, price))')
-      .eq('id', id)
-      .single();
-    if (error) return res.status(404).json({ error: 'Order not found' });
-    res.json(data);
-  } catch (err) {
-    next(err);
-  }
+    const { status } = req.query;
+    let query = supabaseAdmin.from('orders').select('*').order('created_at', { ascending: false });
+    if (status && status !== 'all') query = query.eq('status', status);
+    const { data, error } = await query;
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data ?? []);
+  } catch (err) { next(err); }
 }
 
 async function createOrder(req, res, next) {
   try {
-    const { table_number, items, note } = req.body;
-    // items: [{ menu_id, quantity }]
-
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert([{ table_number, note, status: 'pending' }])
-      .select()
-      .single();
-
-    if (orderError) return res.status(400).json({ error: orderError.message });
-
-    const orderItems = items.map((item) => ({
-      order_id: order.id,
-      menu_id: item.menu_id,
-      quantity: item.quantity,
-    }));
-
-    const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
-    if (itemsError) return res.status(400).json({ error: itemsError.message });
-
-    res.status(201).json(order);
-  } catch (err) {
-    next(err);
-  }
+    const { customer_name, table_number, items, total } = req.body;
+    const { error } = await supabaseAdmin.from('orders').insert([{
+      profile_id: req.user?.id ?? null,
+      status: 'pending',
+      customer_name,
+      table_number,
+      items,
+      total
+    }]);
+    if (error) return res.status(400).json({ error: error.message });
+    res.status(201).json({ message: 'Order created' });
+  } catch (err) { next(err); }
 }
 
 async function updateOrderStatus(req, res, next) {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    const { data, error } = await supabaseAdmin
-      .from('orders')
-      .update({ status })
-      .eq('id', id)
-      .select()
-      .single();
+    const { error } = await supabaseAdmin.from('orders').update({ status }).eq('id', id);
     if (error) return res.status(400).json({ error: error.message });
-    res.json(data);
-  } catch (err) {
-    next(err);
-  }
+    res.json({ message: 'Status updated' });
+  } catch (err) { next(err); }
 }
 
-async function deleteOrder(req, res, next) {
-  try {
-    const { id } = req.params;
-    const { error } = await supabaseAdmin.from('orders').delete().eq('id', id);
-    if (error) return res.status(400).json({ error: error.message });
-    res.json({ message: 'Order deleted successfully' });
-  } catch (err) {
-    next(err);
-  }
-}
-
-module.exports = { getAllOrders, getOrderById, createOrder, updateOrderStatus, deleteOrder };
+module.exports = { getMyOrders, getAllOrders, createOrder, updateOrderStatus };
