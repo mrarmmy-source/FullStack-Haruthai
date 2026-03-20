@@ -1,0 +1,96 @@
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" [class.sidebar--hidden]="!sidebarOpen">
+
+  <!-- Logo -->
+  <div class="sidebar__logo">
+    <h1 class="sidebar__title">Ha-ru-thai</h1>
+    <p class="sidebar__subtitle">ยินดีต้อนรับ</p>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar__nav">
+    <a *ngFor="let item of navItems"
+      href="#"
+      class="nav-link"
+      [class.nav-link--active]="item.active"
+      (click)="onNavClick($event, item)">
+      <svg class="nav-link__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" [attr.d]="item.icon"/>
+      </svg>
+      <span>{{ item.label }}</span>
+    </a>
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar__footer">
+    <div class="sidebar__avatar">{{ userInitial }}</div>
+    <div>
+      <p class="sidebar__user-name">{{ userName }}</p>
+      <p class="sidebar__user-email">{{ userEmail }}</p>
+    </div>
+  </div>
+</aside>
+
+<!-- Mobile Menu Toggle -->
+<button class="mobile-toggle" (click)="toggleSidebar()" aria-label="Toggle menu">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+</button>
+
+<!-- ===== MAIN ===== -->
+<main class="main-content">
+  <section class="hero">
+
+    <!-- Slides -->
+    <div class="hero__slides">
+      <div *ngFor="let slide of slides; let i = index"
+        class="hero__slide"
+        [class.hero__slide--active]="currentSlide === i">
+        <img [src]="slide.image" [alt]="slide.alt" class="hero__image"
+          [attr.loading]="i === 0 ? 'eager' : 'lazy'">
+      </div>
+    </div>
+
+    <!-- Overlays -->
+    <div class="hero__overlay hero__overlay--top"></div>
+    <div class="hero__overlay hero__overlay--sides"></div>
+
+    <!-- Content -->
+    <div class="hero__content">
+      <div class="deco-line animate-scale-in"></div>
+
+      <h2 class="hero__subtitle animate-fade-up">ยินดีต้อนรับสู่</h2>
+
+      <h1 class="hero__title animate-fade-up delay-1">Ha-ru-thai</h1>
+
+      <p class="hero__desc animate-fade-up delay-2">
+        ประสบการณ์การรับประทานอาหารชั้นเลิศกับอาหารไทยต้นตำรับแท้ๆ
+      </p>
+
+      <div class="hero__buttons animate-fade-up delay-3">
+        <button class="btn btn--primary" (click)="onReserve()">จองโต๊ะอาหาร</button>
+        <button class="btn btn--secondary" (click)="onViewMenu()">ดูเมนู</button>
+      </div>
+
+      <div class="deco-line animate-scale-in delay-3" style="margin-top: 3rem;"></div>
+    </div>
+
+    <!-- Slide dots -->
+    <div class="hero__dots">
+      <button *ngFor="let slide of slides; let i = index"
+        class="dot" [class.dot--active]="currentSlide === i"
+        (click)="goToSlide(i)" [attr.aria-label]="'Slide ' + (i + 1)">
+      </button>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero__scroll">
+      <span class="hero__scroll-text">Scroll</span>
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20" class="hero__scroll-arrow">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+      </svg>
+    </div>
+
+  </section>
+</main>

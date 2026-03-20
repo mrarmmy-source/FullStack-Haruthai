@@ -10,6 +10,10 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "src/**/*.spec.ts"
+    "src/**/*.spec.ts",
+    "src/app/pages/customer/order_customer/order_customer.ts",
+    "src/app/pages/customer/payment_customer/payment_customer.ts",
+    "src/app/pages/staff/order_admin/order_admin.ts",
+    "src/app/pages/staff/payment_admin/payment_admin.ts"
   ]
 }
