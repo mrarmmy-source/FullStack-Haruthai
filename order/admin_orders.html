@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { display: ['Playfair Display', 'serif'], sans: ['DM Sans', 'sans-serif'] }, colors: { bg: '#0a0a0a', surface: '#141414', card: '#1a1a1a', border: '#2a2a2a', muted: '#6b6b6b', fg: '#e8e8e8', accent: '#c9a86c', success: '#4ade80', warning: '#fbbf24' } } } }
+  </script>
+  <style> body { font-family: 'DM Sans', sans-serif; background-color: #0a0a0a; color: #e8e8e8; } .btn-primary { background: linear-gradient(135deg, #c9a86c 0%, #a88b5a 100%); } .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px -5px rgba(201, 168, 108, 0.5); } .input-field { background: #0f0f0f; border: 1px solid #2a2a2a; } .input-field:focus { border-color: #c9a86c; outline: none; } .sidebar-link { transition: all 0.2s ease; } .sidebar-link:hover, .sidebar-link.active { background: linear-gradient(90deg, rgba(201, 168, 108, 0.1) 0%, transparent 100%); border-left-color: #c9a86c; color: #c9a86c; } .card-hover { transition: transform 0.3s ease; } .card-hover:hover { transform: translateY(-4px); } </style>
+</head>
+<body class="min-h-screen">
+  <div class="fixed inset-0 bg-gradient-to-br from-bg via-surface to-bg pointer-events-none"></div>
+  <div class="relative flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="fixed left-0 top-0 h-full w-64 bg-surface/80 backdrop-blur-xl border-r border-border z-40 flex flex-col">
+      <div class="p-6 border-b border-border"><h1 class="font-display text-2xl text-accent">Savoria</h1><p class="text-xs text-muted mt-1">Admin Panel</p></div>
+      <nav class="p-4 space-y-1 flex-1">
+        <a href="admin_orders.html" class="sidebar-link active w-full flex items-center gap-3 px-4 py-3 rounded-lg border-l-2 border-transparent text-left"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><span>All Orders</span></a>
+        <a href="admin_payments.html" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-lg border-l-2 border-transparent text-left text-muted hover:text-fg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg><span>Payments</span></a>
+      </nav>
+    </aside>
+    
+    <!-- Main -->
+    <main class="flex-1 ml-64 p-8">
+      <div class="max-w-6xl mx-auto">
+        <div class="flex flex-wrap gap-4 mb-8 items-center">
+          <input type="text" id="search" placeholder="Search customer..." class="input-field flex-1 px-4 py-3 rounded-xl text-fg">
+          <select id="filter" class="input-field px-4 py-3 rounded-xl text-fg min-w-[150px]">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="preparing">Preparing</option>
+            <option value="completed">Completed</option>
+          </select>
+          <button onclick="openModal()" class="btn-primary px-6 py-3 rounded-xl text-bg font-semibold flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>New Order</button>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid"><p class="text-muted col-span-3 text-center py-10">Loading...</p></div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="closeModal()">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-md overflow-y-auto" onclick="event.stopPropagation()">
+      <div id="modalContent" class="p-6"></div>
+    </div>
+  </div>
+<!-- แก้ไข APIURL/APIKEYตรงนี้ -->
+  <script> 
+    const SUPABASE_URL = 'https://ikwmynxboutmiabgieia.supabase.co'; 
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlrd215bnhib3V0bWlhYmdpZWlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTY3MTMsImV4cCI6MjA4OTU3MjcxM30.btAIgAISuaiABbShyBdoVhbrlc4Moy5omXghJocXhrI'; 
+    if(SUPABASE_URL.includes('YOUR_')) alert('Admin: Please set Supabase Keys!');
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const colorMap = { 'pending': 'bg-warning/20 text-warning', 'preparing': 'bg-accent/20 text-accent', 'completed': 'bg-success/20 text-success' };
+
+    async function fetchOrders() {
+      const search = document.getElementById('search').value.toLowerCase();
+      const filter = document.getElementById('filter').value;
+      let query = supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+      if(filter !== 'all') query = query.eq('status', filter);
+      const { data, error } = await query;
+      if(error) return console.error(error);
+      const filtered = data.filter(o => o.customer_name.toLowerCase().includes(search));
+      render(filtered);
+    }
+
+    async function submitOrder(e) {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      const order = {
+        customer_name: form.get('customer'), table_number: form.get('table'),
+        items: form.get('items').split(','), total: Math.floor(Math.random() * 1000) + 100,
+        status: 'pending', order_time: new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'})
+      };
+      const { data, error } = await supabaseClient.from('orders').insert([order]).select();
+      if(error) return alert('Insert Error: ' + error.message);
+      await supabaseClient.from('payments').insert([{ order_id: data[0].id, customer_name: order.customer_name, amount: order.total, status: 'pending', method: 'Unpaid', payment_time: order.order_time }]);
+      closeModal(); fetchOrders();
+    }
+
+    async function nextStatus(id, status) {
+      const flow = ['pending', 'preparing', 'ready', 'served', 'completed'];
+      const idx = flow.indexOf(status);
+      if(idx < flow.length - 1) {
+        const newS = flow[idx+1];
+        await supabaseClient.from('orders').update({status: newS}).eq('id', id);
+        if(newS === 'completed') await supabaseClient.from('payments').update({status: 'completed', method: 'Cash'}).eq('order_id', id);
+        fetchOrders();
+      }
+    }
+
+    function render(data) {
+      document.getElementById('grid').innerHTML = data.length ? data.map(o => `
+        <div class="bg-card/60 border border-border rounded-2xl p-5 card-hover">
+          <div class="flex justify-between mb-2">
+            <span class="font-display text-lg">${o.order_time}</span>
+            <span class="px-2 py-1 rounded-full text-xs ${colorMap[o.status] || 'bg-muted/20'}">${o.status}</span>
+          </div>
+          <p class="text-sm text-muted">${o.table_number} • ${o.customer_name}</p>
+          <p class="text-sm my-2">${o.items.join(', ')}</p>
+          <div class="flex justify-between items-center pt-3 border-t border-border">
+            <span class="font-display text-accent">฿${o.total.toLocaleString()}</span>
+            <button onclick="nextStatus('${o.id}', '${o.status}')" class="px-3 py-1 bg-accent/10 text-accent text-sm rounded-lg hover:bg-accent/20">Next</button>
+          </div>
+        </div>
+      `).join('') : '<p class="text-muted col-span-3 text-center py-10">No orders</p>';
+    }
+
+    function openModal() {
+      document.getElementById('modalContent').innerHTML = `
+        <h3 class="font-display text-xl mb-4">New Order</h3>
+        <form onsubmit="submitOrder(event)" class="space-y-3">
+          <input name="customer" placeholder="Customer" required class="input-field w-full px-4 py-2 rounded-lg">
+          <input name="table" placeholder="Table" required class="input-field w-full px-4 py-2 rounded-lg">
+          <input name="items" placeholder="Items (comma)" class="input-field w-full px-4 py-2 rounded-lg">
+          <div class="flex gap-2 pt-2">
+            <button type="button" onclick="closeModal()" class="flex-1 py-2 border border-border rounded-lg">Cancel</button>
+            <button type="submit" class="flex-1 py-2 btn-primary text-bg rounded-lg">Create</button>
+          </div>
+        </form>`;
+      document.getElementById('modal').classList.remove('hidden'); document.getElementById('modal').classList.add('flex');
+    }
+    function closeModal() { document.getElementById('modal').classList.add('hidden'); document.getElementById('modal').classList.remove('flex'); }
+
+    document.getElementById('search').oninput = fetchOrders;
+    document.getElementById('filter').onchange = fetchOrders;
+    fetchOrders();
+  </script>
+</body>
+</html>
