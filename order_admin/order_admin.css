@@ -1,0 +1,88 @@
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: #0a0a0a;
+  color: #e8e8e8;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  width: 16rem;
+  height: 100%;
+  background: rgba(20,20,20,0.8);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid #2a2a2a;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  color: #c9a86c;
+  font-size: 1.5rem;
+}
+
+/* Main */
+.main {
+  margin-left: 16rem;
+  padding: 2rem;
+  width: 100%;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.input-field {
+  background: #0f0f0f;
+  border: 1px solid #2a2a2a;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  color: white;
+}
+
+.input-field:focus {
+  border-color: #c9a86c;
+  outline: none;
+}
+
+/* Button */
+.btn-primary {
+  background: linear-gradient(135deg, #c9a86c, #a88b5a);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Sidebar Link */
+.sidebar-link {
+  display: block;
+  padding: 0.75rem;
+  border-left: 2px solid transparent;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  color: #c9a86c;
+  border-left-color: #c9a86c;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.8);
+}
+
+.modal-box {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  padding: 1.5rem;
+  border-radius: 1rem;
+}

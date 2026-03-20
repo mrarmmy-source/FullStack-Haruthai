@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Orders</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          },
+          colors: {
+            bg: '#0a0a0a',
+            surface: '#141414',
+            card: '#1a1a1a',
+            border: '#2a2a2a',
+            muted: '#6b6b6b',
+            fg: '#e8e8e8',
+            accent: '#c9a86c',
+            success: '#4ade80',
+            warning: '#fbbf24'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="min-h-screen">
+  <div class="fixed inset-0 bg-gradient-to-br from-bg via-surface to-bg pointer-events-none"></div>
+
+  <div class="relative flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="p-6 border-b border-border">
+        <h1 class="logo">Savoria</h1>
+        <p class="text-xs text-muted mt-1">Admin Panel</p>
+      </div>
+
+      <nav class="p-4 space-y-1 flex-1">
+        <a href="#" class="sidebar-link active">All Orders</a>
+        <a href="#" class="sidebar-link">Payments</a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="max-w-6xl mx-auto">
+
+        <div class="controls">
+          <input id="search" placeholder="Search customer..." class="input-field flex-1">
+
+          <select id="filter" class="input-field">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="preparing">Preparing</option>
+            <option value="completed">Completed</option>
+          </select>
+
+          <button onclick="openModal()" class="btn-primary">New Order</button>
+        </div>
+
+        <div id="grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <p class="text-muted text-center py-10 col-span-3">Loading...</p>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- TS (compiled JS) -->
+  <script src="app.js"></script>
+</body>
+</html>
