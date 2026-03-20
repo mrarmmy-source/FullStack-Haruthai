@@ -4,3 +4,11 @@
 4.นายสกัลป์ ศรีสุข 116610905061-5 
 5 นายธัชพงศ์ แสงสี 116610905139-9 
 6.นายฆนัท กรมธรรมา 116610905108-4
+Restaurants
+Menus
+Dishes
+Customers
+Reservations
+Orders
+Payments
+Staff
