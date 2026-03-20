@@ -66,6 +66,7 @@ export class SupabaseService {
     this.currentUser = null;
     localStorage.removeItem('haruthai_user');
     localStorage.removeItem('haruthai_token');
+    localStorage.removeItem('haruthai_role');
   }
 
   // ── MENUS ─────────────────────────────────────────────────────

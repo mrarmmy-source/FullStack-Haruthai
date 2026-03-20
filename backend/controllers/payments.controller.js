@@ -5,7 +5,7 @@ async function getMyPayments(req, res, next) {
     const { data, error } = await supabaseAdmin
       .from('payments')
       .select('*')
-      .eq('customer_name', req.user.full_name)
+      .eq('profile_id', req.user.id)
       .order('created_at', { ascending: false });
     if (error) return res.status(400).json({ error: error.message });
     res.json(data ?? []);
@@ -28,7 +28,7 @@ async function createPayment(req, res, next) {
     const { customer_name, amount, method, status } = req.body;
     const { error } = await supabaseAdmin
       .from('payments')
-      .insert([{ customer_name, amount, method, status }]);
+      .insert([{ profile_id: req.user.id, customer_name, amount, method, status }]);
     if (error) return res.status(400).json({ error: error.message });
     res.status(201).json({ message: 'Payment created' });
   } catch (err) { next(err); }
@@ -46,11 +46,11 @@ async function updatePaymentStatus(req, res, next) {
 
 async function updatePaymentStatusByCustomer(req, res, next) {
   try {
-    const { customer_name, from_status, to_status } = req.body;
+    const { from_status, to_status } = req.body;
     const { error } = await supabaseAdmin
       .from('payments')
       .update({ status: to_status })
-      .eq('customer_name', customer_name)
+      .eq('profile_id', req.user.id)
       .eq('status', from_status);
     if (error) return res.status(400).json({ error: error.message });
     res.json({ message: 'Status updated' });

@@ -41,6 +41,7 @@ export class StaffSidebarComponent {
 
   logout(): void {
     this.supabase.currentUser = null;
+    localStorage.removeItem('haruthai_role');
     this.router.navigate(['/login']);
   }
 

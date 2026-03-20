@@ -28,6 +28,7 @@ export class LoginComponent {
     try {
       if (this.currentRole === 'staff') {
         if (this.loginData.username === 'admin' && this.loginData.password === '1234') {
+          localStorage.setItem('haruthai_role', 'staff');
           this.router.navigate(['/home']);
         } else {
           alert("ชื่อผู้ใช้หรือรหัสผ่านพนักงานไม่ถูกต้อง");
@@ -35,6 +36,7 @@ export class LoginComponent {
       } else {
         const user = await this.supabaseService.signIn(this.loginData);
         if (user) {
+          localStorage.setItem('haruthai_role', 'customer');
           this.router.navigate(['/customer/home']);
         }
       }
