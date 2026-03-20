@@ -1,0 +1,41 @@
+<div class="reg-container">
+  <h2>{{ title }}</h2>
+
+  <div class="card">
+    @if (!isSuccess) {
+      
+      <div class="form-group">
+        <label>ชื่อ-นามสกุล:</label>
+        <input type="text" 
+               [(ngModel)]="user.fullname" 
+               [ngClass]="{'invalid-border': !user.fullname}" 
+               placeholder="กรอกชื่อของคุณ">
+      </div>
+
+      <div class="form-group">
+        <label>ประเภทสมาชิก:</label>
+        <select [(ngModel)]="user.memberType">
+          @for (opt of memberOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </div>
+
+      <button 
+        [ngStyle]="{'background-color': user.fullname ? '#2ecc71' : '#bdc3c7'}"
+        (click)="onRegister()"
+        [disabled]="!user.fullname">
+        ยืนยันการสมัคร
+      </button>
+
+    } @else {
+      
+      <div class="success-msg">
+        <h3>ยินดีต้อนรับคุณ {{ user.fullname }}!</h3>
+        <p>ระดับสมาชิก: <strong>{{ user.memberType }}</strong></p>
+        <button (click)="isSuccess = false">กลับไปแก้ไข</button>
+      </div>
+
+    }
+  </div>
+</div>
