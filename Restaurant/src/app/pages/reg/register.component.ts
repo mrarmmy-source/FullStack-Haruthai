@@ -1,15 +1,18 @@
 import { Component } from '@angular/core';
 import { SupabaseService } from '../../services/supabase';
-
+import { CommonModule } from '@angular/common';  
+import { FormsModule } from '@angular/forms';   
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
+   standalone: true, 
+    imports: [CommonModule, FormsModule],
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
-
+  title = 'สมัครสมาชิก';
   isSuccess = false;
-
+  memberOptions = ['สมาชิกทั่วไป', 'staff'];
   user = {
     fullname: '',
     phone: '',
