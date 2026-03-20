@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Payments</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <script> tailwind.config = { theme: { extend: { fontFamily: { display: ['Playfair Display', 'serif'], sans: ['DM Sans', 'sans-serif'] }, colors: { bg: '#0a0a0a', surface: '#141414', card: '#1a1a1a', border: '#2a2a2a', muted: '#6b6b6b', fg: '#e8e8e8', accent: '#c9a86c', success: '#4ade80', warning: '#fbbf24' } } } } </script>
+  <style> body { font-family: 'DM Sans', sans-serif; background-color: #0a0a0a; color: #e8e8e8; } .sidebar-link { transition: all 0.2s ease; } .sidebar-link:hover, .sidebar-link.active { background: linear-gradient(90deg, rgba(201, 168, 108, 0.1) 0%, transparent 100%); border-left-color: #c9a86c; color: #c9a86c; } </style>
+</head>
+<body class="min-h-screen">
+  <div class="fixed inset-0 bg-gradient-to-br from-bg via-surface to-bg pointer-events-none"></div>
+  <div class="relative flex min-h-screen">
+    <aside class="fixed left-0 top-0 h-full w-64 bg-surface/80 backdrop-blur-xl border-r border-border z-40 flex flex-col">
+      <div class="p-6 border-b border-border"><h1 class="font-display text-2xl text-accent">Savoria</h1><p class="text-xs text-muted mt-1">Admin Panel</p></div>
+      <nav class="p-4 space-y-1 flex-1">
+        <a href="admin_orders.html" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-lg border-l-2 border-transparent text-left text-muted hover:text-fg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><span>All Orders</span></a>
+        <a href="admin_payments.html" class="sidebar-link active w-full flex items-center gap-3 px-4 py-3 rounded-lg border-l-2 border-transparent text-left"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg><span>Payments</span></a>
+      </nav>
+    </aside>
+    
+    <main class="flex-1 ml-64 p-8">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div class="bg-card/60 border border-border rounded-2xl p-5"><p class="text-muted text-sm mb-1">Total Sales</p><p id="t1" class="font-display text-2xl">฿0</p></div>
+          <div class="bg-card/60 border border-border rounded-2xl p-5"><p class="text-muted text-sm mb-1">Completed</p><p id="t2" class="font-display text-2xl text-success">฿0</p></div>
+          <div class="bg-card/60 border border-border rounded-2xl p-5"><p class="text-muted text-sm mb-1">Pending</p><p id="t3" class="font-display text-2xl text-warning">฿0</p></div>
+          <div class="bg-card/60 border border-border rounded-2xl p-5"><p class="text-muted text-sm mb-1">Transactions</p><p id="t4" class="font-display text-2xl">0</p></div>
+        </div>
+        
+        <div class="bg-card/60 border border-border rounded-2xl overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-surface/50"><tr class="text-left text-sm text-muted"><th class="px-6 py-4">ID</th><th class="px-6 py-4">Customer</th><th class="px-6 py-4">Amount</th><th class="px-6 py-4">Method</th><th class="px-6 py-4">Status</th></tr></thead>
+            <tbody id="table" class="divide-y divide-border"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+<!-- แก้ไข APIURL/APIKEYตรงนี้ -->
+  <script>
+    const SUPABASE_URL = 'https://ikwmynxboutmiabgieia.supabase.co'; 
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlrd215bnhib3V0bWlhYmdpZWlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTY3MTMsImV4cCI6MjA4OTU3MjcxM30.btAIgAISuaiABbShyBdoVhbrlc4Moy5omXghJocXhrI';
+    if(SUPABASE_URL.includes('YOUR_')) alert('Admin: Please set Supabase Keys!');
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function load() {
+      const { data, error } = await supabaseClient.from('payments').select('*').order('created_at', { ascending: false });
+      if(error) return console.error(error);
+      
+      // Stats
+      const total = data.reduce((s,p) => s+Number(p.amount), 0);
+      const comp = data.filter(p=>p.status==='completed').reduce((s,p) => s+Number(p.amount), 0);
+      const pend = data.filter(p=>p.status==='pending').reduce((s,p) => s+Number(p.amount), 0);
+      document.getElementById('t1').innerText = `฿${total.toLocaleString()}`;
+      document.getElementById('t2').innerText = `฿${comp.toLocaleString()}`;
+      document.getElementById('t3').innerText = `฿${pend.toLocaleString()}`;
+      document.getElementById('t4').innerText = data.length;
+
+      // Table
+      document.getElementById('table').innerHTML = data.map(p => `
+        <tr class="hover:bg-surface/30">
+          <td class="px-6 py-4 font-mono text-sm">${p.id.substring(0,8)}...</td>
+          <td class="px-6 py-4">${p.customer_name}</td>
+          <td class="px-6 py-4 font-display text-accent">฿${Number(p.amount).toLocaleString()}</td>
+          <td class="px-6 py-4">${p.method}</td>
+          <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs ${p.status==='completed'?'bg-success/20 text-success':'bg-warning/20 text-warning'}">${p.status}</span></td>
+        </tr>
+      `).join('');
+    }
+    load();
+  </script>
+</body>
+</html>
