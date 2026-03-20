@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { SupabaseService } from '../../../services/supabase';
 
 interface Slide {
   image: string;
@@ -24,8 +25,8 @@ interface NavItem {
 export class CustomerHomeComponent implements OnInit, OnDestroy {
 
   // ── User ──────────────────────────────────────────────────────
-  userName  = 'สมชาย ใจดี';
-  userEmail = 'somchai@email.com';
+  get userName(): string  { return this.supabaseService.currentUser?.full_name ?? 'ลูกค้า'; }
+  get userEmail(): string { return this.supabaseService.currentUser?.phone_number ?? ''; }
   get userInitial(): string { return this.userName.charAt(0); }
 
   // ── Sidebar ───────────────────────────────────────────────────
@@ -72,7 +73,7 @@ export class CustomerHomeComponent implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private supabaseService: SupabaseService) {}
 
   // ── Lifecycle ─────────────────────────────────────────────────
   ngOnInit(): void {

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node server.js)",
+      "Bash(npm start:*)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(npm install:*)"
+    ]
+  }
+}

@@ -1,179 +1,290 @@
-/* Container หลัก */
-.login-container {
-    width: 100%;
-    max-width: 420px;
-    padding: 20px;
-    margin: auto; /* จัดกึ่งกลางหน้าจอ */
+/* ── Variables ── */
+:host {
+  --bg:      #0d0d0d;
+  --surface: #161616;
+  --card:    #1c1c1c;
+  --border:  #2d2d2d;
+  --muted:   #737373;
+  --fg:      #f5f5f5;
+  --accent:  #d4a853;
+  --accent-d:#a67c3d;
+  display: block;
+  height: 100vh;
+  font-family: 'DM Sans', sans-serif;
 }
 
-/* การ์ดสีขาว */
-.card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 15px 40px rgba(212, 168, 83, 0.15); /* เงาสีทองอ่อนๆ */
-    text-align: center;
-    border-top: 5px solid #d4a853; /* เส้นขอบบนสีทอง */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Layout ── */
+.page {
+  display: flex;
+  height: 100vh;
+  background: var(--bg);
 }
 
-.logo-icon {
-    font-size: 3rem;
-    margin-bottom: 10px;
+/* ── Brand Panel ── */
+.brand-panel {
+  position: relative;
+  flex: 1;
+  display: none;
+  overflow: hidden;
 }
 
-h2 {
-    margin: 0 0 5px 0;
-    color: #d4a853; /* หัวข้อสีทอง */
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    font-size: 2rem;
+@media (min-width: 900px) {
+  .brand-panel { display: flex; align-items: center; justify-content: center; }
 }
 
-.subtitle {
-    color: #888888;
-    margin-bottom: 30px;
-    font-size: 0.95rem;
-    font-style: italic;
+.brand-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* ส่วนของ Form Group */
-.form-group {
-    margin-bottom: 20px;
-    text-align: left;
+.brand-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(13,13,13,0.85) 0%, rgba(13,13,13,0.5) 100%);
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #d4a853;
-    font-size: 0.9rem;
+.brand-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 3rem;
 }
 
-/* Input พร้อม Icon */
-.input-with-icon {
-    position: relative;
+.brand-tagline {
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
 }
 
-.input-with-icon input {
-    width: 100%;
-    padding: 12px 15px 12px 45px;
-    border: 2px solid #eee;
-    border-radius: 10px;
-    box-sizing: border-box;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-    background: #fff;
+.brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 4rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  margin-bottom: 0.75rem;
 }
 
-/* 1. Directive [ngClass] จะมาคุมตรงนี้ถ้ามีการ Focus */
-.input-with-icon input:focus {
-    border-color: #d4a853;
-    outline: none;
+.brand-sub {
+  font-size: 0.95rem;
+  color: rgba(245,245,245,0.6);
+  font-style: italic;
+  margin-bottom: 1.5rem;
 }
 
-.input-with-icon span {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #d4a853;
-    font-size: 1.2rem;
+.deco-line {
+  width: 60px;
+  height: 1px;
+  background: var(--accent);
+  margin: 1rem auto;
+  opacity: 0.6;
 }
 
-/* 2. Role Selector (ปุ่มสลับ ลูกค้า/พนักงาน) */
-.role-selector {
-    display: flex;
-    background: rgba(212, 168, 83, 0.08);
-    border-radius: 10px;
-    padding: 5px;
-    margin-bottom: 25px;
-    border: 1px solid rgba(212, 168, 83, 0.2);
+/* ── Form Panel ── */
+.form-panel {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+}
+
+.form-card {
+  width: 100%;
+  max-width: 380px;
+}
+
+/* ── Header ── */
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo-mark {
+  display: block;
+  font-size: 2rem;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.form-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+
+.form-header p {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ── Role Toggle ── */
+.role-toggle {
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 1.75rem;
 }
 
 .role-btn {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    border-radius: 8px;
-    font-weight: 600;
-    color: #333333;
-    transition: all 0.3s;
+  flex: 1;
+  padding: 9px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 7px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all 0.25s;
+  font-family: inherit;
 }
 
-/* ใช้คู่กับ [ngClass]="{'active': currentRole === '...'}" */
-.role-btn.active {
-    background: #ffffff;
-    color: #d4a853;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+.role-btn--active {
+  background: var(--accent);
+  color: #0d0d0d;
 }
 
-/* ปุ่มเข้าสู่ระบบ */
-.btn-login {
-    width: 100%;
-    padding: 14px;
-    background: #d4a853;
-    border: none;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: opacity 0.3s, transform 0.2s;
-    margin-bottom: 15px;
-    letter-spacing: 0.5px;
+/* ── Fields ── */
+.field {
+  margin-bottom: 1.25rem;
 }
 
-.btn-login:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
+.field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
 }
 
-/* เส้นคั่น "หรือ" */
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.input-wrap input {
+  width: 100%;
+  padding: 12px 14px 12px 44px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--fg);
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-wrap input::placeholder { color: #555; }
+
+.input-wrap input:focus {
+  border-color: var(--accent);
+}
+
+/* ── Button ── */
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+  background: var(--accent);
+  color: #0d0d0d;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s, transform 0.15s;
+  font-family: inherit;
+}
+
+.btn-primary:hover {
+  background: var(--accent-d);
+  transform: translateY(-1px);
+}
+
+/* ── Divider ── */
 .divider {
-    display: flex;
-    align-items: center;
-    margin: 20px 0;
-    color: #ddd;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1.5rem 0;
+  color: var(--border);
+  font-size: 0.8rem;
 }
 
 .divider::before, .divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: rgba(212, 168, 83, 0.3);
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }
 
-.divider span {
-    padding: 0 10px;
-    font-size: 0.8rem;
+.divider span { color: var(--muted); }
+
+/* ── Sign up link ── */
+.signup-link {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--muted);
 }
 
-/* ลิงก์ด้านล่าง */
-.links {
-    margin-top: 20px;
-    font-size: 0.9rem;
-    color: #888888;
+.signup-link a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.links a {
-    color: #d4a853;
-    text-decoration: none;
-    font-weight: bold;
+.signup-link a:hover { text-decoration: underline; }
+
+/* ── Hint ── */
+.hint {
+  margin-top: 1.75rem;
+  padding: 12px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
 }
 
-/* กล่องคำแนะนำสำหรับการทดสอบ */
-.hint-box {
-    margin-top: 20px;
-    text-align: center; 
-    color: #666; 
-    font-size: 0.85rem; 
-    background: #fff; 
-    padding: 15px; 
-    border-radius: 10px; 
-    border: 1px solid rgba(212, 168, 83, 0.2);
+.hint-label {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
 }
-.hint-box strong { color: #d4a853; }
+
+.hint strong { color: var(--fg); }
