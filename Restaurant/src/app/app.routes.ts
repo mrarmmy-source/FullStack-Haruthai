@@ -9,7 +9,7 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () =>
-      import('./pages/home/home.component').then(m => m.HomeComponent),
+      import('./pages/staff/home/home-s.component').then(m => m.HomeComponent),
     title: 'Ha-ru-thai — ร้านอาหาร',
   },
 ];

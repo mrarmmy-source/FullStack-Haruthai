@@ -16,8 +16,8 @@ interface NavItem {
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+  templateUrl: './home-s.component.html',
+  styleUrls: ['./home-s.component.css'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
