@@ -1,0 +1,113 @@
+<app-staff-sidebar></app-staff-sidebar>
+<div class="page-content">
+  <div class="content-header">
+    <h1>Payments</h1>
+    <p>Financial overview and transaction records</p>
+  </div>
+
+    <!-- Stat Cards -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--gold">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Total Sales</p>
+          <h3 class="stat-value stat-value--gold">฿{{ totalSales.toLocaleString() }}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--green">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Completed</p>
+          <h3 class="stat-value stat-value--green">฿{{ completed.toLocaleString() }}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--yellow">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Pending</p>
+          <h3 class="stat-value stat-value--yellow">฿{{ pending.toLocaleString() }}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon stat-icon--default">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Transactions</p>
+          <h3 class="stat-value">{{ payments.length }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading payments...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <!-- Table -->
+      <div class="table-wrap" *ngIf="payments.length > 0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of payments">
+              <td class="cell-mono">{{ p.id?.substring(0, 8) }}...</td>
+              <td class="cell-customer">{{ p.customer_name || '—' }}</td>
+              <td class="cell-amount">฿{{ p.amount?.toLocaleString() }}</td>
+              <td class="cell-muted">{{ p.method || '—' }}</td>
+              <td class="cell-muted">{{ p.created_at | date:'dd MMM yyyy' }}</td>
+              <td>
+                <span class="status-badge"
+                  [class.status-completed]="p.status === 'completed'"
+                  [class.status-pending]="p.status === 'pending'"
+                  [class.status-cancelled]="p.status === 'cancelled'">
+                  {{ p.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="payments.length === 0" class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="56" height="56">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+        </svg>
+        <p class="empty-title">No payments found</p>
+        <p class="empty-sub">Payment records will appear here once transactions are processed</p>
+      </div>
+    </ng-container>
+</div>

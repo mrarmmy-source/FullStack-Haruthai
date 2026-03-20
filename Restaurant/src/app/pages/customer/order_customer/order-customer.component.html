@@ -1,0 +1,65 @@
+<app-customer-sidebar></app-customer-sidebar>
+<div class="page-content">
+  <div class="content-header">
+    <h1>My Orders</h1>
+    <p>Track your food and dining history</p>
+  </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading orders...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <!-- Orders Grid -->
+      <div class="orders-grid" *ngIf="orders.length > 0">
+        <div *ngFor="let o of orders" class="order-card">
+          <div class="order-card__header">
+            <div class="order-card__meta">
+              <div class="order-table">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M3 10h18M3 14h18M10 4v16M14 4v16M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1z"/>
+                </svg>
+                Table {{ o.table_number }}
+              </div>
+              <p class="order-time">{{ o.order_time }}</p>
+            </div>
+            <span class="status-badge"
+              [class.status-pending]="o.status === 'pending'"
+              [class.status-preparing]="o.status === 'preparing'"
+              [class.status-completed]="o.status === 'completed'">
+              {{ o.status }}
+            </span>
+          </div>
+
+          <div class="order-divider"></div>
+
+          <div class="order-items" *ngIf="o.items && o.items.length > 0">
+            <p *ngFor="let item of o.items" class="order-item">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="12" height="12">
+                <circle cx="12" cy="12" r="4" stroke-width="2" fill="currentColor"/>
+              </svg>
+              {{ item }}
+            </p>
+          </div>
+
+          <div class="order-card__footer">
+            <span class="order-total-label">Total</span>
+            <span class="order-total">฿{{ o.total?.toLocaleString() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="orders.length === 0" class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="56" height="56">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+        </svg>
+        <p class="empty-title">No orders yet</p>
+        <p class="empty-sub">Your order history will appear here once you place an order</p>
+      </div>
+    </ng-container>
+</div>

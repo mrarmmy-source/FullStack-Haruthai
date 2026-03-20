@@ -1,0 +1,44 @@
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" [class.sidebar--open]="sidebarOpen">
+
+  <div class="sidebar__logo">
+    <h1 class="sidebar__title">Ha-ru-thai</h1>
+    <p class="sidebar__subtitle">Staff Dashboard</p>
+  </div>
+
+  <nav class="sidebar__nav">
+    <a *ngFor="let item of navItems"
+      class="nav-link"
+      [class.nav-link--active]="isActive(item.path)"
+      (click)="navigate(item.path)">
+      <svg class="nav-link__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" [attr.d]="item.icon"/>
+      </svg>
+      <span>{{ item.label }}</span>
+    </a>
+  </nav>
+
+  <div class="sidebar__footer">
+    <div class="sidebar__user-info">
+      <div class="sidebar__avatar">A</div>
+      <div>
+        <p class="sidebar__user-name">Admin</p>
+        <p class="sidebar__user-email">Staff Account</p>
+      </div>
+    </div>
+    <button class="sidebar__logout" (click)="logout()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+      </svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- Mobile toggle -->
+<button class="mobile-toggle" (click)="toggleSidebar()" aria-label="Toggle menu">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="22" height="22">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+</button>

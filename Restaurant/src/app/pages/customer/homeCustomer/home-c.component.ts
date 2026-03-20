@@ -125,6 +125,11 @@ export class CustomerHomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/customer/menu']);
   }
 
+  logout(): void {
+    this.supabaseService.currentUser = null;
+    this.router.navigate(['/login']);
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     if (window.innerWidth >= 1024) return;

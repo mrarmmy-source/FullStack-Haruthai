@@ -1,0 +1,54 @@
+<app-customer-sidebar></app-customer-sidebar>
+<div class="page-content">
+  <div class="content-header">
+    <h1>Our Menu</h1>
+    <p>Authentic Thai cuisine crafted with tradition</p>
+  </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading menu...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="category-bar">
+        <button
+          *ngFor="let cat of categories"
+          class="cat-btn"
+          [class.cat-btn--active]="selectedCategory === cat"
+          (click)="selectedCategory = cat">
+          {{ cat }}
+        </button>
+      </div>
+
+      <div class="menu-grid">
+        <div *ngFor="let item of filteredMenus" class="menu-card">
+          <div class="menu-card__image">
+            <img *ngIf="item.image_url" [src]="item.image_url" [alt]="item.name">
+            <div *ngIf="!item.image_url" class="menu-card__placeholder">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40" opacity="0.3">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.4 5h12.8M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="menu-card__body">
+            <div class="menu-card__row">
+              <h3 class="menu-card__name">{{ item.name }}</h3>
+              <span class="menu-card__price">฿{{ item.price }}</span>
+            </div>
+            <p *ngIf="item.description" class="menu-card__desc">{{ item.description }}</p>
+            <span class="menu-card__badge">{{ item.category }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="filteredMenus.length === 0" class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="48" height="48">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <p>No items in this category</p>
+      </div>
+    </ng-container>
+</div>

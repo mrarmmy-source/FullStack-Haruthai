@@ -1,0 +1,62 @@
+<app-customer-sidebar></app-customer-sidebar>
+<div class="page-content">
+  <div class="content-header">
+    <h1>My Bookings</h1>
+    <p>Your reservation history at Ha-ru-thai</p>
+  </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading bookings...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <!-- Booking List -->
+      <div class="booking-list" *ngIf="bookings.length > 0">
+        <div *ngFor="let b of bookings" class="booking-card">
+          <div class="booking-date-block">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <div>
+              <p class="booking-date">{{ b.booking_date }}</p>
+              <p class="booking-time">{{ b.booking_time }}</p>
+            </div>
+          </div>
+
+          <div class="booking-info">
+            <div class="booking-guests">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M17 20h5v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2h5m6 0H6m6 0v-2a4 4 0 10-8 0v2"/>
+              </svg>
+              {{ b.guests_count }} {{ b.guests_count === 1 ? 'guest' : 'guests' }}
+            </div>
+            <p *ngIf="b.special_request" class="booking-note">{{ b.special_request }}</p>
+          </div>
+
+          <div class="booking-status-col">
+            <span class="status-badge"
+              [class.status-pending]="b.status === 'pending'"
+              [class.status-confirmed]="b.status === 'confirmed'"
+              [class.status-cancelled]="b.status === 'cancelled'">
+              {{ b.status }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="bookings.length === 0" class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="56" height="56">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <p class="empty-title">No bookings yet</p>
+        <p class="empty-sub">Reserve a table and enjoy an authentic Thai dining experience</p>
+        <button class="btn-primary" (click)="goReserve()">Reserve a Table</button>
+      </div>
+    </ng-container>
+</div>

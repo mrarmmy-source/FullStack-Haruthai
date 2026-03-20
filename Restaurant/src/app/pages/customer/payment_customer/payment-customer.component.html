@@ -1,0 +1,56 @@
+<app-customer-sidebar></app-customer-sidebar>
+<div class="page-content">
+  <div class="content-header">
+    <h1>My Payments</h1>
+    <p>Your complete transaction history</p>
+  </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading payments...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <!-- Table -->
+      <div class="table-wrap" *ngIf="payments.length > 0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of payments">
+              <td class="cell-mono">{{ p.id?.substring(0, 8) }}...</td>
+              <td class="cell-amount">฿{{ p.amount?.toLocaleString() }}</td>
+              <td>{{ p.method || '—' }}</td>
+              <td class="cell-muted">{{ p.created_at | date:'dd MMM yyyy' }}</td>
+              <td>
+                <span class="status-badge"
+                  [class.status-completed]="p.status === 'completed'"
+                  [class.status-pending]="p.status === 'pending'"
+                  [class.status-cancelled]="p.status === 'cancelled'">
+                  {{ p.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="payments.length === 0" class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="56" height="56">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+        </svg>
+        <p class="empty-title">No payments found</p>
+        <p class="empty-sub">Your payment history will appear here after completing a transaction</p>
+      </div>
+    </ng-container>
+</div>

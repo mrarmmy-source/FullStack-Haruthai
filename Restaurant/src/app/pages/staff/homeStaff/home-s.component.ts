@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { SupabaseService } from '../../../services/supabase';
 
 interface Slide {
   image: string;
@@ -52,7 +53,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private supabaseService: SupabaseService) {}
 
   // ── Lifecycle ─────────────────────────────────────────────────
   ngOnInit(): void {
@@ -116,5 +117,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (window.innerWidth >= 1024) {
       this.sidebarOpen = true;
     }
+  }
+
+  logout(): void {
+    this.supabaseService.currentUser = null;
+    this.router.navigate(['/login']);
   }
 }

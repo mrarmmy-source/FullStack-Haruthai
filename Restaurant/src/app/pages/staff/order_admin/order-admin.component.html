@@ -1,0 +1,89 @@
+<app-staff-sidebar></app-staff-sidebar>
+<div class="page-content">
+  <div class="content-header">
+    <h1>All Orders</h1>
+    <p>Monitor and manage incoming orders</p>
+  </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+        </svg>
+        <input
+          class="input-field search-input"
+          [(ngModel)]="search"
+          (input)="filterOrders()"
+          placeholder="Search by customer name...">
+      </div>
+      <select class="input-field filter-select" [(ngModel)]="statusFilter" (change)="loadOrders()">
+        <option value="all">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="preparing">Preparing</option>
+        <option value="completed">Completed</option>
+      </select>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading orders...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <!-- Orders Grid -->
+      <div class="orders-grid" *ngIf="filtered.length > 0">
+        <div *ngFor="let o of filtered" class="order-card">
+          <div class="order-card__header">
+            <div>
+              <p class="order-customer">{{ o.customer_name || 'Unknown' }}</p>
+              <p class="order-time">{{ o.order_time }}</p>
+            </div>
+            <span class="status-badge"
+              [class.status-pending]="o.status === 'pending'"
+              [class.status-preparing]="o.status === 'preparing'"
+              [class.status-completed]="o.status === 'completed'"
+              [class.status-cancelled]="o.status === 'cancelled'">
+              {{ o.status }}
+            </span>
+          </div>
+
+          <div class="order-divider"></div>
+
+          <div class="order-meta">
+            <div class="order-table">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="13" height="13">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M3 10h18M3 14h18M10 4v16M14 4v16"/>
+              </svg>
+              Table {{ o.table_number }}
+            </div>
+          </div>
+
+          <div class="order-items" *ngIf="o.items && o.items.length > 0">
+            <p *ngFor="let item of o.items" class="order-item">
+              <span class="order-item-dot"></span>
+              {{ item }}
+            </p>
+          </div>
+
+          <div class="order-card__footer">
+            <span class="order-total-label">Total</span>
+            <span class="order-total">฿{{ o.total?.toLocaleString() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filtered.length === 0" class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="56" height="56">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <p class="empty-title">No orders found</p>
+        <p class="empty-sub">Try adjusting the search or filter criteria</p>
+      </div>
+    </ng-container>
+</div>
